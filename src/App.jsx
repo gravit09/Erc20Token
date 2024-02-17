@@ -73,6 +73,32 @@ export default function App() {
     });
   };
 
+  const handleBurn = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const erc20 = new ethers.Contract(contractInfo.address, erc20abi, signer);
+    await erc20.burn(data.get("value"));
+  };
+
+  const handlePause = async (e) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const erc20 = new ethers.Contract(contractInfo.address, erc20abi, signer);
+    await erc20.pause();
+  };
+
+  const handleUnPause = async (e) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const erc20 = new ethers.Contract(contractInfo.address, erc20abi, signer);
+    await erc20.unpause();
+  };
+
   const getMyBalance = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
@@ -103,7 +129,6 @@ export default function App() {
       const signer = await provider.getSigner();
       const signerAddress = await signer.getAddress();
 
-      // Retrieve the stake rate and staked amount using the appropriate contract methods
       const stakeRate = await erc20.stakingRewardsRate();
       const stakedAmount = await erc20.stakingBalance(signerAddress);
 
@@ -139,7 +164,6 @@ export default function App() {
   };
 
   const handleUnstake = async (e) => {
-    e.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     const signer = await provider.getSigner();
@@ -294,6 +318,43 @@ export default function App() {
             </form>
           </div>
         </div>
+        <div className="m-4 credit-card w-full lg:w-3/4 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+          <div className="mt-4 p-4">
+            <h1 className="text-xl font-semibold text-gray-700 text-center">
+              Burn Tokens
+            </h1>
+            <form onSubmit={handleBurn}>
+              <div className="my-3">
+                <input
+                  type="text"
+                  name="value"
+                  className="input input-bordered block w-full focus:ring focus:outline-none"
+                  placeholder="Amount to Burn"
+                />
+              </div>
+              <footer className="p-4">
+                <button
+                  type="submit"
+                  className="btn btn-primary submit-button focus:ring focus:outline-none w-full"
+                >
+                  Burn
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+        <button
+          onClick={handlePause}
+          className="btn btn-primary submit-button focus:ring focus:outline-none w-full"
+        >
+          Pause chain
+        </button>
+        <button
+          onClick={handleUnPause}
+          className="btn btn-primary  submit-button focus:ring focus:outline-none w-full mt-4"
+        >
+          UnPause chain
+        </button>
         <form onSubmit={handleMint}>
           <div className="my-3">
             <input
